@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLearningData } from '../hooks/useLearningData';
+import questionsData from '../data/questions.json';
+import type { Question } from '../types';
 
 const Review: React.FC = () => {
   const navigate = useNavigate();
@@ -64,7 +66,19 @@ const Review: React.FC = () => {
                 {r.isReviewed && <span style={{ fontSize: '12px', color: 'var(--correct-green)', fontWeight: 600 }}>복습 완료 ✅</span>}
                 {!r.isReviewed && <span style={{ fontSize: '12px', color: 'var(--incorrect-coral)', fontWeight: 600 }}>틀린 횟수: {r.incorrectCount}회</span>}
               </div>
-              <h4 style={{ marginBottom: '16px', lineHeight: 1.4 }}>{r.question}</h4>
+              <h4 style={{ marginBottom: '8px', lineHeight: 1.4 }}>{r.question}</h4>
+              
+              {r.originalType === '객관식' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px', fontSize: '14px', color: 'var(--text-muted)' }}>
+                  {(() => {
+                    const originalQ = (questionsData as Question[]).find(q => q.originalNumber === r.originalNumber);
+                    return originalQ?.choices.map((choice, idx) => (
+                      <div key={idx}>{idx + 1}. {choice}</div>
+                    ));
+                  })()}
+                </div>
+              )}
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px', backgroundColor: 'var(--surface-color-hover)', padding: '12px', borderRadius: '8px' }}>
                 <div><span style={{ color: 'var(--incorrect-coral)', fontWeight: 600 }}>내가 적은 답:</span> {r.userAnswer || '(입력 안함)'}</div>
                 <div><span style={{ color: 'var(--correct-green)', fontWeight: 600 }}>정확한 정답:</span> {r.correctAnswer}</div>
