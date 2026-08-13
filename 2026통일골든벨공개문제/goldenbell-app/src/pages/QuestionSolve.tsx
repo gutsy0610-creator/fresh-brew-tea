@@ -4,6 +4,7 @@ import questionsData from '../data/questions.json';
 import type { Question } from '../types';
 import { useLearningData } from '../hooks/useLearningData';
 import { isCorrectSubjective, shuffleArray } from '../utils/scoring';
+import ExplanationText from '../components/ExplanationText';
 
 const QuestionSolve: React.FC = () => {
   const { progress, incorrectRecords, recordResult } = useLearningData();
@@ -191,9 +192,9 @@ const QuestionSolve: React.FC = () => {
             <span style={{ fontWeight: 'bold', fontSize: '18px' }}>{q.correctAnswer}</span>
           </div>
           
-          <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '16px', borderRadius: '8px', lineHeight: 1.6 }}>
-            <strong>📖 해설:</strong><br/>
-            {q.explanation}
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '16px', borderRadius: '8px' }}>
+            <strong>📖 해설:</strong>
+            <ExplanationText text={q.explanation} keywords={[...q.keywords, q.correctAnswer]} />
           </div>
 
           <button className="btn-primary w-full" style={{ marginTop: '24px', minHeight: '56px' }} onClick={nextQuestion}>다음 문제</button>

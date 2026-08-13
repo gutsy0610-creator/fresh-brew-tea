@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLearningData } from '../hooks/useLearningData';
 import questionsData from '../data/questions.json';
 import type { Question } from '../types';
+import ExplanationText from '../components/ExplanationText';
 
 const Review: React.FC = () => {
   const navigate = useNavigate();
@@ -82,6 +83,14 @@ const Review: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px', backgroundColor: 'var(--surface-color-hover)', padding: '12px', borderRadius: '8px' }}>
                 <div><span style={{ color: 'var(--incorrect-coral)', fontWeight: 600 }}>내가 적은 답:</span> {r.userAnswer || '(입력 안함)'}</div>
                 <div><span style={{ color: 'var(--correct-green)', fontWeight: 600 }}>정확한 정답:</span> {r.correctAnswer}</div>
+              </div>
+              
+              <div style={{ marginTop: '12px', padding: '12px', backgroundColor: 'var(--main-light)', borderRadius: '8px' }}>
+                <strong style={{ fontSize: '14px', color: 'var(--main-dark)' }}>📖 해설</strong>
+                {(() => {
+                  const originalQ = (questionsData as Question[]).find(q => q.originalNumber === r.originalNumber);
+                  return <ExplanationText text={r.explanation} keywords={originalQ ? [...originalQ.keywords, originalQ.correctAnswer] : [r.correctAnswer]} />;
+                })()}
               </div>
             </div>
           ))}

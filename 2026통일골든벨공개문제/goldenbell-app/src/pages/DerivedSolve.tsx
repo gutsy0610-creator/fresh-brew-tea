@@ -4,6 +4,7 @@ import derivedData from '../data/derived_questions.json';
 import type { DerivedQuestion } from '../types';
 import { useLearningData } from '../hooks/useLearningData';
 import { isCorrectSubjective, shuffleArray } from '../utils/scoring';
+import ExplanationText from '../components/ExplanationText';
 
 const DerivedSolve: React.FC = () => {
   const { recordResult } = useLearningData();
@@ -138,9 +139,9 @@ const DerivedSolve: React.FC = () => {
             <span style={{ fontWeight: 'bold', fontSize: '18px' }}>{q.correctAnswer}</span>
           </div>
           
-          <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '16px', borderRadius: '8px', lineHeight: 1.6 }}>
-            <strong>📖 상세 해설:</strong><br/>
-            {q.explanation}
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '16px', borderRadius: '8px' }}>
+            <strong>📖 상세 해설:</strong>
+            <ExplanationText text={q.explanation} keywords={[q.correctAnswer]} />
             
             <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(0,0,0,0.1)' }}>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>근거 원본 문제: {q.sourceOriginalNumber}번</div>

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import questionsData from '../data/questions.json';
 import type { Question } from '../types';
+import ExplanationText from '../components/ExplanationText';
 
 const Flashcards: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -124,8 +125,9 @@ const Flashcards: React.FC = () => {
           {/* Back */}
           <div className="card flex-column" style={{ position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', overflowY: 'auto' }}>
             <h2 style={{ color: 'var(--correct-green)', textAlign: 'center', marginBottom: 'var(--spacing-md)' }}>{currentQ.correctAnswer}</h2>
-            <div style={{ fontSize: '14px', lineHeight: 1.6, flex: 1 }}>
-              <p><strong>해설:</strong> {currentQ.explanation}</p>
+            <div style={{ fontSize: '14px', flex: 1 }}>
+              <strong>📖 해설:</strong>
+              <ExplanationText text={currentQ.explanation} keywords={[...currentQ.keywords, currentQ.correctAnswer]} />
             </div>
           </div>
         </div>
