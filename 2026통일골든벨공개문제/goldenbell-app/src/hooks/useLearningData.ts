@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { IncorrectRecord, LearningStats, Question, DerivedQuestion } from '../types';
+import type { IncorrectRecord, LearningStats, Question, DerivedQuestion } from '../types';
 
 const STATS_KEY = 'goldenbell_stats';
 const INCORRECT_KEY = 'goldenbell_incorrect';

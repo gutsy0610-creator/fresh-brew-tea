@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import questionsData from '../data/questions.json';
 import derivedData from '../data/derived_questions.json';
-import { Question, DerivedQuestion } from '../types';
+import type { Question, DerivedQuestion } from '../types';
 import { useLearningData } from '../hooks/useLearningData';
 import { isCorrectSubjective, shuffleArray } from '../utils/scoring';
 
@@ -18,7 +18,7 @@ const GoldenBell: React.FC = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
   
   // Family mode
-  const [players, setPlayers] = useState<string[]>(['참가자1', '참가자2']);
+  const [players] = useState<string[]>(['참가자1', '참가자2']);
 
   const [quizQueue, setQuizQueue] = useState<QuizItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);

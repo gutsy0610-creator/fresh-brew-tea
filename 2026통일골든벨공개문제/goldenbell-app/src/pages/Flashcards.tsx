@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import questionsData from '../data/questions.json';
-import { Question } from '../types';
+import type { Question } from '../types';
 
 const Flashcards: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -108,10 +108,14 @@ const Flashcards: React.FC = () => {
           <div className="card flex-center flex-column" style={{ position: 'absolute', width: '100%', height: '100%', backfaceVisibility: 'hidden', backgroundColor: 'var(--main-blue)', color: 'white' }}>
             <div style={{ position: 'absolute', top: '16px', left: '16px', fontSize: '12px', opacity: 0.8 }}>공개문제 {currentQ.originalNumber}번</div>
             <div style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '12px', opacity: 0.8 }}>{currentQ.chapterTitle}</div>
-            <h3 style={{ fontSize: '20px', color: 'white', marginTop: '20px', lineHeight: 1.5 }}>{currentQ.question}</h3>
+            <h3 style={{ fontSize: '20px', color: 'white', marginTop: '20px', lineHeight: 1.5, marginBottom: currentQ.originalType === '객관식' ? '12px' : '0' }}>{currentQ.question}</h3>
             {currentQ.originalType === '객관식' && (
-              <div style={{ marginTop: '20px', fontSize: '14px', opacity: 0.9 }}>
-                (객관식 문제)
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '90%', marginTop: '12px', fontSize: '14px', textAlign: 'left', backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '12px', borderRadius: '8px' }}>
+                {currentQ.choices.map((choice, idx) => (
+                  <div key={idx}>
+                    {idx + 1}. {choice}
+                  </div>
+                ))}
               </div>
             )}
             <div style={{ position: 'absolute', bottom: '20px', fontSize: '14px', opacity: 0.8 }}>터치해서 뒤집기 👆</div>

@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
 import derivedData from '../data/derived_questions.json';
-import { DerivedQuestion } from '../types';
+import type { DerivedQuestion } from '../types';
 import { useLearningData } from '../hooks/useLearningData';
 import { isCorrectSubjective, shuffleArray } from '../utils/scoring';
 
 const DerivedSolve: React.FC = () => {
-  const navigate = useNavigate();
   const { recordResult } = useLearningData();
 
   const [setupMode, setSetupMode] = useState(true);

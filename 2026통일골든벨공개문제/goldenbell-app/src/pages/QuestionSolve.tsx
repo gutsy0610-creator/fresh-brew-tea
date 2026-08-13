@@ -1,12 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
 import questionsData from '../data/questions.json';
-import { Question } from '../types';
+import type { Question } from '../types';
 import { useLearningData } from '../hooks/useLearningData';
 import { isCorrectSubjective, shuffleArray } from '../utils/scoring';
 
 const QuestionSolve: React.FC = () => {
-  const navigate = useNavigate();
   const { progress, incorrectRecords, recordResult } = useLearningData();
 
   const [setupMode, setSetupMode] = useState(true);
