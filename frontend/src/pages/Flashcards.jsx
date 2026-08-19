@@ -8,7 +8,7 @@ const Flashcards = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const questions = questionsDataRaw;
+  const questions = questionsDataRaw.filter(q => q.answer && q.answer.trim() !== '');
 
   const currentQ = questions[currentIndex];
 

@@ -18,8 +18,8 @@ const QuizMode = () => {
 
   // Setup game
   useEffect(() => {
-    // Basic shuffle for all questions
-    const shuffled = [...questionsDataRaw].sort(() => 0.5 - Math.random());
+    const validQuestions = questionsDataRaw.filter(q => q.answer && q.answer.trim() !== '');
+    const shuffled = [...validQuestions].sort(() => 0.5 - Math.random());
     setQuestions(shuffled);
   }, [mode]);
 
