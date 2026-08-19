@@ -11,6 +11,7 @@ const QuizMode = () => {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [subjectiveInput, setSubjectiveInput] = useState('');
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -54,6 +55,24 @@ const QuizMode = () => {
     return false;
   };
 
+  const isCorrectSubjective = (input, answer) => {
+    if (!answer) return false;
+    const cleanInput = input.replace(/\s+/g, '').toLowerCase();
+    const cleanAnswer = answer.toString().replace(/\s+/g, '').toLowerCase();
+    
+    if (cleanInput === '') return false;
+    
+    // Allow partial match for kids (e.g. they typed "영광" instead of "영광입니다")
+    if (cleanAnswer.includes(cleanInput) || cleanInput.includes(cleanAnswer)) return true;
+    return false;
+  };
+
+  const isCurrentCorrect = () => {
+    return currentQ.options.length > 0 
+      ? isCorrect(selectedAnswer) 
+      : isCorrectSubjective(subjectiveInput, currentQ.answer);
+  };
+
   const handleSelectOption = (option) => {
     if (isAnswered) return;
     setSelectedAnswer(option);
@@ -61,16 +80,13 @@ const QuizMode = () => {
 
   const submitAnswer = () => {
     if (!selectedAnswer && currentQ.options.length > 0) return;
+    if (currentQ.options.length === 0 && !subjectiveInput.trim()) {
+      alert("정답을 입력해주세요!");
+      return;
+    }
     
     setIsAnswered(true);
-    
-    let correct = false;
-    if (currentQ.options.length > 0) {
-      correct = isCorrect(selectedAnswer);
-    } else {
-      // Subjective self-check or exact string match - simplified for demo
-      correct = true; // Assume correct for subjective in this demo unless they say no
-    }
+    const correct = isCurrentCorrect();
 
     if (correct) {
       setScore(score + 1);
@@ -89,26 +105,23 @@ const QuizMode = () => {
         saved.push(currentQ);
         localStorage.setItem('incorrectNotes', JSON.stringify(saved));
       }
+    }
+  };
 
-      if (mode === 'goldenbell') {
-        // Golden bell ends on first mistake
-        setTimeout(() => {
-          setGameOver(true);
-        }, 1500);
-        return;
-      }
+  const goToNext = () => {
+    if (mode === 'goldenbell' && !isCurrentCorrect()) {
+      setGameOver(true);
+      return;
     }
 
-    // Move to next question after delay
-    setTimeout(() => {
-      if (currentIndex + 1 < questions.length) {
-        setCurrentIndex(currentIndex + 1);
-        setIsAnswered(false);
-        setSelectedAnswer(null);
-      } else {
-        setGameOver(true);
-      }
-    }, 2000);
+    if (currentIndex + 1 < questions.length) {
+      setCurrentIndex(currentIndex + 1);
+      setIsAnswered(false);
+      setSelectedAnswer(null);
+      setSubjectiveInput('');
+    } else {
+      setGameOver(true);
+    }
   };
 
   const getOptionClass = (option) => {
@@ -194,33 +207,58 @@ const QuizMode = () => {
               ))}
             </div>
           ) : (
-            <div style={{ padding: '20px', background: '#F8F9FA', borderRadius: '16px', border: '2px dashed #DFE6E9' }}>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '15px' }}>주관식 문제입니다. 정답을 마음속으로 생각해보세요!</p>
-              {isAnswered ? (
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary-dark)' }}>
-                  정답: {currentQ.answer}
+            <div style={{ padding: '20px', background: '#F8F9FA', borderRadius: '16px', border: '2px dashed #DFE6E9', textAlign: 'center' }}>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '15px' }}>주관식 문제입니다. 정답을 입력해주세요!</p>
+              <input 
+                type="text" 
+                value={subjectiveInput}
+                onChange={(e) => setSubjectiveInput(e.target.value)}
+                disabled={isAnswered}
+                placeholder="여기에 정답 입력..."
+                style={{
+                  width: '100%', maxWidth: '400px', padding: '15px', fontSize: '1.2rem',
+                  borderRadius: '12px', border: '2px solid var(--primary-light)',
+                  marginBottom: '15px', textAlign: 'center'
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !isAnswered) submitAnswer();
+                }}
+              />
+              {isAnswered && (
+                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: isCurrentCorrect() ? 'var(--success-color)' : 'var(--warning-color)' }}>
+                  {isCurrentCorrect() ? '정답입니다! 🎉' : '틀렸습니다!'} <br/>
+                  <span style={{ fontSize: '1.2rem', color: 'var(--primary-dark)' }}>실제 정답: {currentQ.answer}</span>
                 </div>
-              ) : (
-                <button className="btn btn-primary" onClick={() => setIsAnswered(true)}>정답 확인하기</button>
               )}
             </div>
           )}
 
-          {currentQ.options && currentQ.options.length > 0 && !isAnswered && (
+          {/* Submit Button (Before Answered) */}
+          {!isAnswered && (
             <div style={{ marginTop: '30px', textAlign: 'right' }}>
               <button 
-                className={`btn ${selectedAnswer ? 'btn-primary' : 'btn-outline'}`}
+                className={`btn ${(currentQ.options.length > 0 && selectedAnswer) || (currentQ.options.length === 0 && subjectiveInput.trim()) ? 'btn-primary' : 'btn-outline'}`}
                 onClick={submitAnswer}
-                disabled={!selectedAnswer}
               >
                 정답 제출
               </button>
             </div>
           )}
           
-          {isAnswered && currentQ.options && currentQ.options.length > 0 && (
-             <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(108, 92, 231, 0.05)', borderRadius: '12px' }}>
-                <strong style={{ color: 'var(--primary-dark)' }}>정답 설명:</strong> {currentQ.answer}
+          {/* Next Button (After Answered) */}
+          {isAnswered && (
+             <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                {currentQ.options && currentQ.options.length > 0 && (
+                  <div style={{ padding: '15px', background: 'rgba(108, 92, 231, 0.05)', borderRadius: '12px' }}>
+                    <strong style={{ color: 'var(--primary-dark)' }}>정답 설명:</strong> {currentQ.answer}
+                  </div>
+                )}
+                
+                <div style={{ textAlign: 'right' }}>
+                  <button className="btn btn-primary" onClick={goToNext} autoFocus>
+                    {(mode === 'goldenbell' && !isCurrentCorrect()) ? '결과 보기' : '다음 문제'}
+                  </button>
+                </div>
              </div>
           )}
         </motion.div>
