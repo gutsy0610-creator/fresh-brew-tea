@@ -57,10 +57,21 @@ const QuizMode = () => {
 
   const isCorrectSubjective = (input, answer) => {
     if (!answer) return false;
-    const cleanInput = input.replace(/\s+/g, '').toLowerCase();
-    const cleanAnswer = answer.toString().replace(/\s+/g, '').toLowerCase();
+    let cleanInput = input.replace(/\s+/g, '').toLowerCase();
+    let cleanAnswer = answer.toString().replace(/\s+/g, '').toLowerCase();
     
     if (cleanInput === '') return false;
+
+    // Handle O/X question edge cases (English O vs Korean ㅇ vs Zero 0)
+    const oVariants = ['o', 'ㅇ', '0', '○'];
+    const xVariants = ['x', '×'];
+
+    if (oVariants.includes(cleanAnswer) && oVariants.includes(cleanInput)) return true;
+    if (xVariants.includes(cleanAnswer) && xVariants.includes(cleanInput)) return true;
+
+    // Normalizing characters for broader string matching just in case
+    cleanInput = cleanInput.replace(/[ㅇ0○]/g, 'o').replace(/×/g, 'x');
+    cleanAnswer = cleanAnswer.replace(/[ㅇ0○]/g, 'o').replace(/×/g, 'x');
     
     // Allow partial match for kids (e.g. they typed "영광" instead of "영광입니다")
     if (cleanAnswer.includes(cleanInput) || cleanInput.includes(cleanAnswer)) return true;
