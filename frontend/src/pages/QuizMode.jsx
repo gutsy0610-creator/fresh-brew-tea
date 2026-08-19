@@ -27,14 +27,30 @@ const QuizMode = () => {
 
   const currentQ = questions[currentIndex];
 
-  // Helper to determine if an option matches the answer
   const isCorrect = (optionText) => {
     if (!currentQ.answer) return false;
-    // For objective questions
-    if (optionText.includes(currentQ.answer) || currentQ.answer.includes(optionText.trim()[0])) {
-      return true;
+    const ans = currentQ.answer.toString().trim();
+    
+    // Find index of the option
+    const optIndex = currentQ.options.indexOf(optionText);
+    
+    if (optIndex !== -1) {
+      const circles = ['①', '②', '③', '④', '⑤'];
+      const arabics = ['1', '2', '3', '4', '5'];
+      
+      // If answer contains the exact circle number
+      if (ans.includes(circles[optIndex])) return true;
+      
+      // If answer starts with the arabic number like "2", "2번", "2)"
+      const numRegex = new RegExp(`^${arabics[optIndex]}(\\s|번|\\)|\\.|$)`);
+      if (numRegex.test(ans)) return true;
     }
-    // For simple text answers, we'd need better matching but this is a start
+
+    // Fallback: check if the text matches (ignoring circle numbers if any were left)
+    const cleanOpt = optionText.replace(/^[①②③④⑤]\s*/, '').trim();
+    if (cleanOpt.length > 1 && ans.includes(cleanOpt)) return true;
+    if (ans === cleanOpt) return true;
+
     return false;
   };
 
